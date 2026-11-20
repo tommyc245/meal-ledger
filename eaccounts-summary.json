@@ -1,0 +1,151 @@
+{
+  "format": "meal-ledger-eaccounts-summary",
+  "version": 1,
+  "from": "2025-08-17",
+  "through": "2026-11-20",
+  "sourceRows": 641,
+  "purchases": 524,
+  "grossCents": 495022,
+  "refundCount": 3,
+  "refundCents": 1697,
+  "netCents": 493325,
+  "source": "Shared eAccounts summary supplied by the site owner. Arithmetic reconciled; underlying transaction rows were summarized externally.",
+  "excludes": [
+    "Meal swipes",
+    "ePrint printing",
+    "DukeCard deposits and adjustments",
+    "eAccounts top-ups"
+  ],
+  "locations": [
+    {
+      "name": "Ginger and Soy",
+      "purchases": 64,
+      "netCents": 82220
+    },
+    {
+      "name": "Il Forno",
+      "purchases": 78,
+      "netCents": 71434
+    },
+    {
+      "name": "Devils Krafthouse",
+      "purchases": 81,
+      "netCents": 71130
+    },
+    {
+      "name": "Gothic Grill",
+      "purchases": 42,
+      "netCents": 50495
+    },
+    {
+      "name": "Sazon",
+      "purchases": 31,
+      "netCents": 39191
+    },
+    {
+      "name": "Red Mango",
+      "purchases": 22,
+      "netCents": 23233
+    },
+    {
+      "name": "Tandor",
+      "purchases": 28,
+      "netCents": 21921
+    },
+    {
+      "name": "Farmstead",
+      "purchases": 22,
+      "netCents": 20813
+    },
+    {
+      "name": "Chefs Kitchen",
+      "purchases": 13,
+      "netCents": 18268
+    },
+    {
+      "name": "Sprout",
+      "purchases": 16,
+      "netCents": 16784
+    },
+    {
+      "name": "Skillet",
+      "purchases": 51,
+      "netCents": 14654
+    },
+    {
+      "name": "JBS",
+      "purchases": 6,
+      "netCents": 9596
+    },
+    {
+      "name": "Twinnies",
+      "purchases": 12,
+      "netCents": 8747
+    },
+    {
+      "name": "Its Thyme",
+      "purchases": 11,
+      "netCents": 8229
+    },
+    {
+      "name": "Pitchfork Provisions",
+      "purchases": 7,
+      "netCents": 7982
+    },
+    {
+      "name": "The Cafe",
+      "purchases": 8,
+      "netCents": 6763
+    },
+    {
+      "name": "Gyotaku",
+      "purchases": 6,
+      "netCents": 6700
+    },
+    {
+      "name": "Center Deli",
+      "purchases": 3,
+      "netCents": 3974
+    },
+    {
+      "name": "Beyu Blue",
+      "purchases": 5,
+      "netCents": 3263
+    },
+    {
+      "name": "Marketplace Board (AUCE)",
+      "purchases": 2,
+      "netCents": 2580
+    },
+    {
+      "name": "Trinity Cafe",
+      "purchases": 6,
+      "netCents": 2086
+    },
+    {
+      "name": "Panera",
+      "purchases": 2,
+      "netCents": 1148
+    },
+    {
+      "name": "McDonalds",
+      "purchases": 5,
+      "netCents": 1092
+    },
+    {
+      "name": "Marketplace A La Carte",
+      "purchases": 1,
+      "netCents": 569
+    },
+    {
+      "name": "Vending (Coke, Carr)",
+      "purchases": 1,
+      "netCents": 250
+    },
+    {
+      "name": "Lobby Shop",
+      "purchases": 1,
+      "netCents": 203
+    }
+  ]
+}

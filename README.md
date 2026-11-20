@@ -4,13 +4,13 @@ A private food-order dashboard that runs in your browser. Group meals, expand fl
 
 ## Your data stays on your device
 
-This repository contains the website code and sample demo data only. It contains no owner's receipts, email credentials, access tokens, or private backups. Receipt processing and storage happen in your browser using IndexedDB. Microsoft access tokens stay in memory and are lost on refresh. Each signed-in mailbox has a separate local ledger. Use your own browser profile on shared computers.
+This repository contains the website code, labeled sample data, and an aggregate eAccounts dining summary that the site owner explicitly authorized for public sharing. It contains no raw receipt text, card numbers, email credentials, access tokens, or private backups. Receipt processing and storage happen in your browser using IndexedDB. Microsoft access tokens stay in memory and are lost on refresh. Each signed-in mailbox has a separate local ledger. Use your own browser profile on shared computers.
 
 GitHub serves the app files. When you connect Outlook, the app talks directly to Microsoft Graph using your own account's delegated permissions. Imported receipt files are read on your device; they are not uploaded to GitHub. There is no shared database or cloud backup, and clearing your browser's site data removes your local ledger. Download a private receipt backup before changing browsers or devices.
 
 ## Get started
 
-1. Open the GitHub Pages website and choose **Use my data** to leave the labeled demo.
+1. Open the GitHub Pages website to see the owner-authorized **Public eAccounts summary**. Use **Import my own summary** in All dining for your own browser-local summary, or use Import receipts for your own meal history.
 2. Use **Import receipts** to add `.eml` receipt emails, paste receipt text, paste a batch, or restore your own Meal Ledger `.json` backup.
 3. The default view is **All time**. Year buttons make last year's orders easy to find.
 4. Open **My meals** and expand **Flavors**, **Fillings**, or **Variations** beneath each meal. Milkshake flavors count toward one Milkshake total; Sazon quesadillas count toward one Quesadilla total.
@@ -30,3 +30,7 @@ Use **Import receipts → Download my receipt backup** on the device holding you
 The parser supports Duke Transact receipts plus generic priced receipt rows. Uncertain receipts and refund notices go to review. Refund pairs deduplicate by transaction identity, and you can exclude confirmed refunds. Review unfamiliar receipt formats before relying on totals. Spending reflects USD receipt totals, including any meal-plan tender, taxes, and fees; it is not necessarily out-of-pocket cash spending.
 
 This is the compiled static website. No server, mailbox credentials, or database needs to be deployed. GitHub Pages can serve these files directly from the repository root.
+
+## Public dining summary
+
+The public default covers August 17, 2025 through November 20, 2026: 524 reported dining purchases at 26 locations, $4,950.22 gross charges less $16.97 in refunds, for $4,933.25 net. Meal swipes, printing, deposits, adjustments, and top-ups are excluded. These are owner-supplied aggregate figures; individual transaction rows and item names are not included. Your own imported data remains browser-local and replaces the public example in your view.
