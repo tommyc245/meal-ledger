@@ -43,40 +43,34 @@ function rankingPanel(metric, title, note) {
   const value=row=>metric==='visits'?row.purchases:row.netCents;
   const label=row=>metric==='visits'?row.purchases.toLocaleString()+' visits':money(row.netCents);
   const maximum=Math.max(1,...rows.map(value));
-  return '<section class="panel place-ranking" data-ranking="'+metric+'"><div class="panel-head"><div><h2>'+title+'</h2><p class="panel-subtitle">'+note+'</p></div></div><div class="place-leader"><span class="coverage-label">'+(metric==='visits'?'YOUR MOST VISITED':'YOUR TOP SPENDING SPOT')+'</span><h3>'+escape(leader.name)+'</h3><strong>'+label(leader)+'</strong></div><div class="card-bars">'+rows.map((row,index)=>'<div class="card-bar-row"><div><span><small>'+String(index+1).padStart(2,'0')+'</small> '+escape(row.name)+'</span><strong>'+label(row)+'</strong></div><div class="rank-bar"><i style="width:'+Math.max(0,value(row)/maximum*100)+'%;background:'+(index?'#afc48d':'#385f40')+'"></i></div></div>').join('')+'</div></section>';
+  return '<section class="panel place-ranking" data-ranking="'+metric+'"><div class="panel-head"><div><h2>'+title+'</h2><p class="panel-subtitle">'+note+'</p></div></div><div class="place-leader"><span class="coverage-label">'+(metric==='visits'?'YOUR MOST VISITED':'YOUR TOP SPENDING SPOT')+'</span><h3>'+escape(leader.name)+'</h3><strong>'+label(leader)+'</strong></div><div class="card-bars">'+rows.map((row,index)=>'<div class="card-bar-row"><div><span><small>'+String(index+1).padStart(2,'0')+'</small> '+escape(row.name)+'</span><strong>'+label(row)+'</strong></div><div class="rank-bar"><i style="width:'+Math.max(0,value(row)/maximum*100)+'%;background:'+(index?'#00539B':'#012169')+'"></i></div></div>').join('')+'</div></section>';
 }
 function render() {
   active=true;
   document.querySelectorAll('.nav-item').forEach(button=>button.classList.remove('active'));
   $('#eaccounts-nav').classList.add('active');
-  $('.sidebar')?.classList.remove('open');
-  $('#page-title').textContent='Your dining places.';
-  $('#page-description').textContent='Where you spend the most. Where you stop the most. Mobile and in-person purchases together.';
+  if($('#tools-menu'))$('#tools-menu').open=false;
+  $('#page-title').textContent='Dining places';
+  $('#page-description').textContent='Your campus favorites, from mobile and in-person purchases.';
   $('#breadcrumb').textContent='Dining places';
-  if(hosted) $('.local-status').innerHTML='<i></i> '+(publicDefault?'Shared dining summary':'Private browser storage');
-  for(const selector of ['#toolbar','#history-coverage','#demo-banner','#connect-button']) $(selector)?.classList.add('hidden');
+  for(const selector of ['#toolbar','#history-coverage','#demo-banner','#connect-button'])$(selector)?.classList.add('hidden');
   const input='<input type="file" accept=".json,application/json" data-eaccounts-file hidden>';
-  if(!summary) {
-    $('#content').innerHTML='<div class="panel empty-state"><h2>Bring your card history to the table</h2><p>Import your eAccounts summary to see restaurant visits and spending, including in-person purchases. Your receipt meal rankings stay on Mobile orders.</p><button class="button primary" data-eaccounts-action="import">Import eAccounts summary</button>'+input+'<p class="muted">The file stays in this browser. No Duke password is needed.</p></div>';
+  if(!summary){
+    $('#content').innerHTML='<section class="panel empty-state"><h2>Add your dining history</h2><p>Import an eAccounts summary to see your most visited places.</p><button class="button primary" data-eaccounts-action="import">Import dining summary</button>'+input+'</section>';
     return;
   }
-  const rows=rankedLocations(summary,sort);
+  const rows=rankedLocations(summary,'spend');
   $('#content').innerHTML=
-    '<section class="history-coverage"><div class="coverage-main"><span class="coverage-label">'+(publicDefault?'Public eAccounts summary':'Your eAccounts summary')+'</span><span>'+shortDate(summary.from)+' – '+shortDate(summary.through)+'</span></div><p class="card-source-note">'+(publicDefault?'This is the site owner’s shared summary. Import your own summary to view your purchases here. ':'')+'Card totals already include mobile purchases. Visit counts use purchase transactions; multiple purchases during one stop count separately. This is a saved snapshot.</p></section>'+
-    '<section class="stats-grid" aria-label="eAccounts summary">'+
-      stat('Dining purchases',summary.purchases.toLocaleString(),'Purchase count excludes refunds')+
-      stat('Dining locations',summary.locations.length,'Registers combined by location')+
-      stat('Net card spending',money(summary.netCents),'Gross '+money(summary.grossCents)+' less refunds')+
-      stat('Refunds',money(summary.refundCents),summary.refundCount+' refunds already subtracted')+
-    '</section>'+
-    '<div class="card-actions"><div class="segmented" aria-label="Rank restaurants"><button data-eaccounts-action="sort-spend" class="'+(sort==='spend'?'selected':'')+'">By spending</button><button data-eaccounts-action="sort-visits" class="'+(sort==='visits'?'selected':'')+'">By purchases</button></div><div class="card-action-buttons"><button class="button" data-eaccounts-action="export">Export locations</button><button class="button" data-eaccounts-action="backup">Download summary</button><button class="button" data-eaccounts-action="import">'+(publicDefault?'Import my own summary':'Replace my summary')+'</button></div></div>'+
-    '<div class="place-rankings">'+rankingPanel('spend','Most money spent','Ranked by net card spending')+rankingPanel('visits','Most times visited','Ranked by purchase transactions')+'</div>'+
-    '<section class="panel card-coverage"><details><summary>What this history covers</summary><p>Dining dollars and Flex purchases, grouped across each location’s registers and online terminals. Refunds are subtracted from spending. Mobile receipt totals are tracked separately and never added again.</p><p><strong>Excluded:</strong> '+summary.excludes.map(escape).join(', ')+'.</p><p>'+escape(summary.source)+'</p><p>'+summary.sourceRows+' reported source rows; '+summary.purchases+' dining purchases and '+summary.refundCount+' refunds included.</p></details></section>'+
-    '<section class="panel recent-panel"><div class="panel-head"><div><h2>Every dining location</h2><p class="panel-subtitle">Net amounts include refunds</p></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>LOCATION</th><th>PURCHASES</th><th>NET SPENT</th><th>NET PER PURCHASE</th></tr></thead><tbody>'+
-    rows.map(row=>'<tr><td>'+escape(row.name)+'</td><td>'+row.purchases+'</td><td>'+money(row.netCents)+'</td><td>'+(row.purchases?money(Math.round(row.netCents/row.purchases)):'—')+'</td></tr>').join('')+
-    '</tbody><tfoot><tr><td>Total</td><td>'+summary.purchases+'</td><td>'+money(summary.netCents)+'</td><td>'+money(Math.round(summary.netCents/Math.max(1,summary.purchases)))+'</td></tr></tfoot></table></div></section>'+input;
-  $('#footer-status').textContent=summary.purchases+' dining purchases · '+(publicDefault?'Public shared summary':hosted?'Saved in this browser':'Private local summary');
+    '<div class="page-period"><span>'+(publicDefault?'Public eAccounts summary':'Your dining summary')+'</span><span>'+shortDate(summary.from)+' – '+shortDate(summary.through)+'</span></div>'+
+    '<section class="stats-grid dining-stats" aria-label="Dining summary">'+stat('Dining locations',summary.locations.length,'Registers combined by location')+stat('Dining visits',summary.purchases.toLocaleString(),'Based on purchase transactions')+'</section>'+
+    '<div class="place-rankings">'+rankingPanel('spend','Most money spent','Your top places by spending')+rankingPanel('visits','Most times visited','Your most frequent stops')+'</div>'+
+    '<details class="panel all-locations"><summary>All '+summary.locations.length+' dining locations</summary><div class="table-wrap"><table class="data-table"><thead><tr><th>LOCATION</th><th>VISITS</th><th>SPENT</th></tr></thead><tbody>'+
+    rows.map(row=>'<tr><td>'+escape(row.name)+'</td><td>'+row.purchases+'</td><td>'+money(row.netCents)+'</td></tr>').join('')+'</tbody></table></div></details>'+
+    '<div class="quiet-summary"><span>Visits count purchases, so several purchases in one stop count separately.</span><span class="dining-spending">Total spent '+money(summary.netCents)+'</span></div>'+
+    '<details class="data-notes"><summary>About this data</summary><p>'+escape(summary.source)+'</p><p>Saved summary, including mobile and in-person purchases. Mobile totals are never added again. Excludes '+summary.excludes.map(escape).join(', ')+'.</p></details>'+input;
+  $('#footer-status').textContent=publicDefault?'Shared dining history · USD':'Your dining history · USD';
 }
+
 document.addEventListener('click',event=>{
   const button=event.target.closest('button');
   if(!button)return;
@@ -86,8 +80,8 @@ document.addEventListener('click',event=>{
     return;
   }
   event.preventDefault();event.stopImmediatePropagation();
-  if(action==='open'){if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');render();return;}
-  if(action==='import'){$('[data-eaccounts-file]').click();return;}
+  if(action==='open'){if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');render();window.scrollTo(0,0);return;}
+  if(action==='import'){if(!$('[data-eaccounts-file]')){if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');render();}$('[data-eaccounts-file]').click();return;}
   if(action==='sort-spend'||action==='sort-visits'){sort=action==='sort-spend'?'spend':'visits';render();return;}
   if(!summary)return;
   if(action==='backup'){download(JSON.stringify(summary,null,2),'application/json','meal-ledger-eaccounts-summary.json');return;}
@@ -111,11 +105,8 @@ async function ready() {
     const observer=new MutationObserver(()=>{if($('#content')&&!$('#content .loading')){observer.disconnect();resolve();}});
     observer.observe(document.documentElement,{childList:true,subtree:true});
   });
-  const styles=document.createElement('style');
-  styles.textContent='.card-actions{display:flex;gap:15px;justify-content:space-between;align-items:center;margin:0 0 22px;flex-wrap:wrap}.card-action-buttons{display:flex;gap:8px;flex-wrap:wrap}.card-source-note{margin:10px 0 0;font-size:11px;color:#7b896d;line-height:1.8}.card-bars{padding:18px 23px 25px}.card-bar-row{padding:12px 0}.card-bar-row>div:first-child{display:flex;justify-content:space-between;gap:15px;font-size:12px;color:#5b744c}.card-bar-row strong{font-weight:550;white-space:nowrap}.card-bar-row .rank-bar{height:5px;margin-top:10px}.data-table tfoot td{background:#f3f6ed;font-weight:600;border-top:1px solid #e1e9d6}.card-actions .button{font-size:10px}@media(max-width:650px){.card-actions{align-items:flex-start}.card-bars{padding:13px 18px 20px}.card-bar-row>div:first-child{font-size:11px}.card-source-note{font-size:10px}}';
-  document.head.append(styles);
   const button=document.createElement('button');button.id='eaccounts-nav';button.className='nav-item';button.dataset.eaccountsAction='open';
-  button.innerHTML='<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M7 15h4"/></svg>Dining places<span class="nav-count" id="eaccounts-count"></span>';
+  button.innerHTML='Dining places<span class="nav-count hidden" id="eaccounts-count"></span>';
   $('nav[aria-label="Main navigation"]')?.prepend(button);
   summary=await readSummary();
   $('#eaccounts-count').textContent=summary?String(summary.purchases):'';

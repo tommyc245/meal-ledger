@@ -2,20 +2,21 @@
 
 A dining dashboard with two main pages: **Dining places** ranks locations by spending and visits, while **Mobile orders** tracks receipt-based meals, flavors, and ordering history.
 
-## Your data stays on your device
+## Shared history and private imports
 
-This repository contains the website code, labeled sample data, and an aggregate eAccounts dining summary that the site owner explicitly authorized for public sharing. It contains no raw receipt text, card numbers, email credentials, access tokens, or private backups. Receipt processing and storage happen in your browser using IndexedDB. Microsoft access tokens stay in memory and are lost on refresh. Each signed-in mailbox has a separate local ledger. Use your own browser profile on shared computers.
+This repository contains the website code, labeled sample data, and owner-authorized public summaries for eAccounts dining history and mobile orders. The mobile summary contains daily aggregate restaurant totals, grouped meal counts, and flavor/filling breakdowns. It contains no raw receipt emails, order IDs, card numbers, email addresses, account identifiers, credentials, access tokens, or private backups. New visitor imports are processed in the browser and saved privately in IndexedDB. Microsoft access tokens stay in memory and are lost on refresh. Each signed-in mailbox has a separate local ledger.
 
 GitHub serves the app files. When you connect Outlook, the app talks directly to Microsoft Graph using your own account's delegated permissions. Imported receipt files are read on your device; they are not uploaded to GitHub. There is no shared database or cloud backup, and clearing your browser's site data removes your local ledger. Download a private receipt backup before changing browsers or devices.
 
 ## Get started
 
-1. Open **Dining places** to see the owner-authorized **Public eAccounts summary**. The spending and visit rankings appear side by side. Visits use purchase transaction counts, so several purchases during one stop count separately. Use **Import my own summary** for your own browser-local summary.
-2. Use **Import receipts** to add `.eml` receipt emails, paste receipt text, paste a batch, or restore your own Meal Ledger `.json` backup.
-3. The default view is **All time**. Year buttons make last year's orders easy to find.
-4. Open **Mobile orders** to see your most common mobile meal, ranked by the number of separate confirmed receipt orders containing it. Item quantities are shown separately. Use **My meals** on that page and expand **Flavors**, **Fillings**, or **Variations** beneath each meal. Milkshake flavors count toward one Milkshake total; Sazon quesadillas count toward one Quesadilla total.
+1. **Dining places** shows the spending and visit rankings side by side, with dining locations and visits at the top. Total spending appears in small text at the bottom. Visits use purchase transaction counts, so several purchases during one stop count separately.
+2. **Mobile orders** immediately displays the owner's shared history: 358 confirmed orders, 383 items, 140 grouped meals, and 19 locations, from August 22, 2025 through November 18, 2026. This is a saved snapshot; it does not automatically scan a mailbox.
+3. Keep **All time** selected to include last year's mobile orders, or use **30 days / 90 days**. Rolling windows use Duke's America/New_York calendar days. Dining places uses the complete eAccounts period because its source only has location totals.
+4. Mobile meals rank by separate orders, with item quantities shown alongside. Search for a meal, restaurant, or flavor; expand **Flavors**, **Fillings**, or **Variations**. Milkshake flavors stack under Milkshake, and Sazon fillings stack under Quesadilla.
+5. The small gear menu contains **Import receipts**, **Import dining summary**, and **Connections**. Imported data replaces the shared history in your own view; it is never added to the owner's data or uploaded to the public site. Receipt tools, private backups, and CSV exports remain available there.
 
-The two main pages have shareable addresses ending in `#dining-places` and `#mobile-orders`. Receipt management and email setup remain available as tools. The public site contains no owner receipt history: the mobile page starts empty in a fresh browser until receipts are imported or an email scan completes. Dining totals already include mobile purchases and are never added to the mobile receipt totals.
+The two main pages have shareable addresses ending in `#dining-places` and `#mobile-orders`. Dining totals already include mobile purchases and are never added to the mobile receipt totals. The palette uses Duke navy (#012169), royal blue (#00539B), and white; color reference: https://brand.duke.edu/colors/.
 
 ## Connect your own Outlook / Duke email
 
