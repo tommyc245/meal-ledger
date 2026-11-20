@@ -1,32 +1,20 @@
+import { parseDiningImport } from './dining-import.js';
+import { getDataMode, setDataMode, readDiningSummary, saveDiningSummary } from './workspace-data.js';
 import { validateSummary, rankedLocations } from './eaccounts-model.js';
 const $ = s => document.querySelector(s);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = cents => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
 const shortDate = value => new Date(value+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const hosted = $('meta[name="meal-ledger-mode"]')?.content === 'browser';
-const namespace = () => hosted ? localStorage.getItem('meal-ledger-workspace') || 'imports' : 'local';
 let summary = null, active = false, sort = 'spend', publicDefault = false;
-const database = await new Promise((resolve,reject) => {
-  const request = indexedDB.open('meal-ledger-card-history',1);
-  request.onupgradeneeded = () => request.result.createObjectStore('summaries');
-  request.onsuccess = () => resolve(request.result);
-  request.onerror = () => reject(new Error('Browser storage is unavailable.'));
-}).catch(() => null);
 async function readSummary() {
-  if(database) {
-    const value = await new Promise((resolve,reject) => { const request=database.transaction('summaries').objectStore('summaries').get(namespace()); request.onsuccess=()=>resolve(request.result); request.onerror=()=>reject(request.error); }).catch(()=>null);
-    try { if(value){ publicDefault=false; return validateSummary(value); } } catch {}
+  if(getDataMode()!=='shared'){
+    const value=await readDiningSummary().catch(()=>null);
+    try{if(value){publicDefault=false;return validateSummary(value);}}catch{}
+    if(getDataMode()==='personal'){publicDefault=false;return null;}
   }
   if(!hosted)return null;
-  try {
-    const response=await fetch(new URL('./eaccounts-summary.json',import.meta.url),{cache:'no-cache'});
-    if(!response.ok)return null;
-    const value=validateSummary(await response.json());publicDefault=true;return value;
-  }catch{return null;}
-}
-async function saveSummary(value) {
-  if(!database) throw new Error('Enable browser site storage before importing.');
-  await new Promise((resolve,reject) => { const transaction=database.transaction('summaries','readwrite'); transaction.objectStore('summaries').put(value,namespace()); transaction.oncomplete=resolve; transaction.onerror=()=>reject(transaction.error); });
+  try{const response=await fetch(new URL('./eaccounts-summary.json',import.meta.url),{cache:'no-cache'});if(!response.ok)return null;const value=validateSummary(await response.json());publicDefault=true;return value;}catch{return null;}
 }
 function notify(message) {
   const target=$('#toast'); if(!target) return; target.textContent=message; target.classList.add('visible'); setTimeout(()=>target.classList.remove('visible'),6000);
@@ -54,7 +42,7 @@ function render() {
   $('#page-description').textContent='Your campus favorites, from mobile and in-person purchases.';
   $('#breadcrumb').textContent='Dining places';
   for(const selector of ['#toolbar','#history-coverage','#demo-banner','#connect-button'])$(selector)?.classList.add('hidden');
-  const input='<input type="file" accept=".json,application/json" data-eaccounts-file hidden>';
+  const input='<input type="file" accept=".csv,.tsv,.txt,.json" data-eaccounts-file hidden>';
   if(!summary){
     $('#content').innerHTML='<section class="panel empty-state"><h2>Add your dining history</h2><p>Import an eAccounts summary to see your most visited places.</p><button class="button primary" data-eaccounts-action="import">Import dining summary</button>'+input+'</section>';
     return;
@@ -81,7 +69,7 @@ document.addEventListener('click',event=>{
   }
   event.preventDefault();event.stopImmediatePropagation();
   if(action==='open'){if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');render();window.scrollTo(0,0);return;}
-  if(action==='import'){if(!$('[data-eaccounts-file]')){if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');render();}$('[data-eaccounts-file]').click();return;}
+  if(action==='import'){document.dispatchEvent(new CustomEvent('meal-ledger:upload-open',{detail:{kind:'dining'}}));return;}
   if(action==='sort-spend'||action==='sort-visits'){sort=action==='sort-spend'?'spend':'visits';render();return;}
   if(!summary)return;
   if(action==='backup'){download(JSON.stringify(summary,null,2),'application/json','meal-ledger-eaccounts-summary.json');return;}
@@ -95,8 +83,8 @@ document.addEventListener('change',async event=>{
   if(!event.target.matches('[data-eaccounts-file]'))return;
   const file=event.target.files[0];if(!file)return;
   try {
-    if(file.size>2*1024*1024)throw new Error('Choose a summary file under 2 MB.');
-    const parsed=validateSummary(JSON.parse(await file.text()));await saveSummary(parsed);summary=parsed;publicDefault=false;
+    if(file.size>10*1024*1024)throw new Error('Choose a dining file under 10 MB.');
+    const {summary:parsed}=parseDiningImport(await file.text());await saveDiningSummary(parsed);setDataMode('personal');summary=parsed;publicDefault=false;
     $('#eaccounts-count').textContent=String(summary.purchases);useRealData();render();notify('eAccounts summary imported. Receipt totals are kept separate.');
   }catch(error){notify(error.message||'The summary could not be imported.');}
 });
@@ -108,7 +96,7 @@ async function ready() {
   const button=document.createElement('button');button.id='eaccounts-nav';button.className='nav-item';button.dataset.eaccountsAction='open';
   button.innerHTML='Dining places<span class="nav-count hidden" id="eaccounts-count"></span>';
   $('nav[aria-label="Main navigation"]')?.prepend(button);
-  summary=await readSummary();
+  const initialMode=getDataMode();summary=await readSummary();if(initialMode!==getDataMode())summary=await readSummary();
   $('#eaccounts-count').textContent=summary?String(summary.purchases):'';
   if(summary)useRealData();
   if(location.hash==='#dining-places'||(!location.hash&&hosted&&$('#breadcrumb')?.textContent!=='Connections')) {
@@ -118,4 +106,12 @@ async function ready() {
   document.addEventListener('meal-ledger:rendered',()=>{if(active)render();});
   window.addEventListener('hashchange',()=>{if(location.hash==='#dining-places')render();});
 }
+document.addEventListener('meal-ledger:data-changed',event=>{
+  summary=event.detail?.summary ? validateSummary(event.detail.summary) : null;publicDefault=false;
+  if($('#eaccounts-count'))$('#eaccounts-count').textContent=summary?String(summary.purchases):'';
+  if(event.detail?.page==='dining'){
+    if(location.hash!=='#dining-places')history.pushState({},'','#dining-places');
+    render();window.scrollTo(0,0);
+  }else if(active)render();
+});
 await ready();
