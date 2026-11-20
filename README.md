@@ -1,6 +1,6 @@
 # Meal Ledger
 
-A private food-order dashboard that runs in your browser. Group meals, expand flavors and fillings, browse all years of order history, and export your tallies.
+A dining dashboard with two main pages: **Dining places** ranks locations by spending and visits, while **Mobile orders** tracks receipt-based meals, flavors, and ordering history.
 
 ## Your data stays on your device
 
@@ -10,10 +10,12 @@ GitHub serves the app files. When you connect Outlook, the app talks directly to
 
 ## Get started
 
-1. Open the GitHub Pages website to see the owner-authorized **Public eAccounts summary**. Use **Import my own summary** in All dining for your own browser-local summary, or use Import receipts for your own meal history.
+1. Open **Dining places** to see the owner-authorized **Public eAccounts summary**. The spending and visit rankings appear side by side. Visits use purchase transaction counts, so several purchases during one stop count separately. Use **Import my own summary** for your own browser-local summary.
 2. Use **Import receipts** to add `.eml` receipt emails, paste receipt text, paste a batch, or restore your own Meal Ledger `.json` backup.
 3. The default view is **All time**. Year buttons make last year's orders easy to find.
-4. Open **My meals** and expand **Flavors**, **Fillings**, or **Variations** beneath each meal. Milkshake flavors count toward one Milkshake total; Sazon quesadillas count toward one Quesadilla total.
+4. Open **Mobile orders** to see your most common mobile meal, ranked by the number of separate confirmed receipt orders containing it. Item quantities are shown separately. Use **My meals** on that page and expand **Flavors**, **Fillings**, or **Variations** beneath each meal. Milkshake flavors count toward one Milkshake total; Sazon quesadillas count toward one Quesadilla total.
+
+The two main pages have shareable addresses ending in `#dining-places` and `#mobile-orders`. Receipt management and email setup remain available as tools. The public site contains no owner receipt history: the mobile page starts empty in a fresh browser until receipts are imported or an email scan completes. Dining totals already include mobile purchases and are never added to the mobile receipt totals.
 
 ## Connect your own Outlook / Duke email
 
