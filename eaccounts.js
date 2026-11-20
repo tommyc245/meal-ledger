@@ -10,7 +10,7 @@ let summary = null, active = false, sort = 'spend', publicDefault = false;
 async function readSummary() {
   if(getDataMode()!=='shared'){
     const value=await readDiningSummary().catch(()=>null);
-    try{if(value){publicDefault=false;return validateSummary(value);}}catch{}
+    try{if(value){const valid=validateSummary(value);if(!getDataMode())setDataMode('personal');publicDefault=false;return valid;}}catch{}
     if(getDataMode()==='personal'){publicDefault=false;return null;}
   }
   if(!hosted)return null;
